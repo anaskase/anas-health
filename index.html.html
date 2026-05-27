@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خطة التغذية اليومية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0b1120;
+  font-family: 'Cairo', sans-serif;
+  color: #e8f4f0;
+  min-height: 100vh;
+  padding: 24px 16px 40px;
+}
+
+.page { max-width: 860px; margin: 0 auto; }
+
+/* HEADER */
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.header .chip {
+  display: inline-block;
+  background: linear-gradient(135deg, #00d4aa, #00a882);
+  color: #0b1120;
+  font-weight: 900;
+  font-size: 13px;
+  padding: 6px 18px;
+  border-radius: 30px;
+  margin-bottom: 10px;
+}
+.header h1 { font-size: 28px; font-weight: 900; line-height: 1.3; }
+.header h1 em { color: #00d4aa; font-style: normal; }
+.header p { color: #6b9e9a; font-size: 14px; margin-top: 6px; }
+
+/* SUMMARY STRIP */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.sum-box {
+  background: #131f30;
+  border-radius: 14px;
+  padding: 14px 10px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.sum-val { font-size: 22px; font-weight: 900; }
+.sum-val.g { color: #00d4aa; }
+.sum-val.b { color: #4a9eff; }
+.sum-val.o { color: #ff6b35; }
+.sum-val.y { color: #ffd700; }
+.sum-label { font-size: 11px; color: #6b9e9a; margin-top: 2px; }
+
+/* MEAL SECTION */
+.meal-section { margin-bottom: 30px; }
+
+.meal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.meal-title .icon-wrap {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.meal-title h2 { font-size: 17px; font-weight: 800; }
+.meal-title span { font-size: 12px; color: #6b9e9a; display: block; }
+.meal-title .kcal-badge {
+  margin-right: auto;
+  background: rgba(255,215,0,0.12);
+  color: #ffd700;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,215,0,0.2);
+}
+
+/* FOOD CARDS GRID */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.food-card {
+  background: #131f30;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeUp 0.4s ease both;
+}
+.food-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.food-card .glow {
+  position: absolute;
+  top: -20px; left: -20px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.12;
+  filter: blur(20px);
+}
+
+.food-card .food-emoji {
+  font-size: 30px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.food-card .food-name {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.food-card .food-qty {
+  font-size: 12px;
+  color: #6b9e9a;
+  margin-bottom: 12px;
+}
+
+.food-card .macros {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.macro-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.macro-pill.p { background: rgba(0,212,170,0.15); color: #00d4aa; }
+.macro-pill.c { background: rgba(74,158,255,0.15); color: #4a9eff; }
+.macro-pill.f { background: rgba(255,107,53,0.15); color: #ff6b35; }
+
+.macro-pill .key { opacity: 0.7; }
+
+/* divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  margin: 6px 0 24px;
+}
+
+/* TOTAL ROW */
+.total-row {
+  background: linear-gradient(135deg, rgba(0,212,170,0.1), rgba(74,158,255,0.06));
+  border: 1px solid rgba(0,212,170,0.2);
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.total-row .total-label { font-size: 15px; font-weight: 800; flex: 1; }
+.total-item { text-align: center; }
+.total-item .tv { font-size: 20px; font-weight: 900; }
+.total-item .tk { font-size: 10px; color: #6b9e9a; }
+
+/* TIPS */
+.tips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.tip {
+  background: #131f30;
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.tip .ti { font-size: 22px; margin-bottom: 6px; }
+.tip .tv { font-size: 15px; font-weight: 800; color: #00d4aa; }
+.tip .tk { font-size: 11px; color: #6b9e9a; margin-top: 2px; }
+
+.footer-note {
+  text-align: center;
+  font-size: 12px;
+  color: #4a6a66;
+  line-height: 1.8;
+}
+
+/* color themes per meal */
+.m1 .icon-wrap { background: rgba(255,215,0,0.12); }
+.m2 .icon-wrap { background: rgba(74,158,255,0.12); }
+.m3 .icon-wrap { background: rgba(0,212,170,0.12); }
+.m4 .icon-wrap { background: rgba(255,107,53,0.12); }
+.m5 .icon-wrap { background: rgba(180,100,255,0.12); }
+
+@media (max-width: 560px) {
+  .summary { grid-template-columns: repeat(2, 1fr); }
+  .tips { grid-template-columns: 1fr 1fr; }
+  .header h1 { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="chip">🔥 خطة التحول الجسدي</div>
+    <h1>توزيع <em>1800 سعرة</em> اليومية<br>عضلات عالية · دهون منخفضة</h1>
+    <p>95 كغ | 182 سم &nbsp;→&nbsp; الهدف: 80 كغ</p>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <div class="sum-box">
+      <div class="sum-val y">1800</div>
+      <div class="sum-label">سعرة / يوم</div>
+    </div>
+    <div class="sum-box">
+      <div class="sum-val g">188غ</div>
+      <div class="sum-label">🥩 بروتين</div>
+    </div>
+    <div class="sum-box">
+      <div class="sum-val b">143غ</div>
+      <div class="sum-label">🍚 كربوهيدرات</div>
+    </div>
+    <div class="sum-box">
+      <div class="sum-val o">50غ</div>
+      <div class="sum-label">🥑 دهون</div>
+    </div>
+  </div>
+
+  <!-- ═══ MEAL 1 ═══ -->
+  <div class="meal-section m1">
+    <div class="meal-title">
+      <div class="icon-wrap">☀️</div>
+      <div>
+        <h2>الفطور</h2>
+        <span>7:00 – 8:00 صباحاً</span>
+      </div>
+      <div class="kcal-badge">420 سعرة</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="food-card" style="animation-delay:0.05s">
+        <div class="glow" style="background:#ffd700"></div>
+        <span class="food-emoji">🥚</span>
+        <div class="food-name">بيض كامل</div>
+        <div class="food-qty">4 بيضات كاملة</div>
+        <div class="macros">
+          <span class="macro-pill p"><span class="key">ب </span>24غ</span>
+          <span class="macro-pill f"><span class="key">د </span>20غ</span>
+          <span class="macro-pill c"><span class="key">ك </span>2غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.1s">
+        <div class="glow" style="background:#ffd700"></div>
+        <span class="food-emoji">🍳</span>
+        <div class="food-name">بياض بيض</div>
+        <div class="food-qty">2 بياضة إضافية</div>
+        <div class="macros">
+          <span class="macro-pill p"><span class="key">ب </span>7غ</span>
+          <span class="macro-pill c"><span class="key">ك </span>0غ</span>
+          <span class="macro-pill f"><span class="key">د </span>0غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.15s">
+        <div class="glow" style="background:#ffd700"></div>
+        <span class="food-emoji">🍞</span>
+        <div class="food-name">خبز أسمر / رغيف</div>
+        <div class="food-qty">50 غرام (ربع رغيف)</div>
+        <div class="macros">
+          <span class="macro-pill c"><span class="key">ك </span>23غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>5غ</span>
+          <span class="macro-pill f"><span class="key">د </span>1غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.2s">
+        <div class="glow" style="background:#ffd700"></div>
+        <span class="food-emoji">🥬</span>
+        <div class="food-name">خضار ورقية</div>
+        <div class="food-qty">كمية مفتوحة (خس، خيار)</div>
+        <div class="macros">
+          <span class="macro-pill c"><span class="key">ك </span>~3غ</span>
+          <span class="macro-pill f"><span class="key">د </span>0غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>1غ</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ═══ MEAL 2 ═══ -->
+  <div class="meal-section m2">
+    <div class="meal-title">
+      <div class="icon-wrap">🍽️</div>
+      <div>
+        <h2>الغداء</h2>
+        <span>12:30 – 1:30 ظهراً</span>
+      </div>
+      <div class="kcal-badge">520 سعرة</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="food-card" style="animation-delay:0.05s">
+        <div class="glow" style="background:#4a9eff"></div>
+        <span class="food-emoji">🍗</span>
+        <div class="food-name">صدر دجاج صافي</div>
+        <div class="food-qty">200 غرام بعد الطبخ</div>
+        <div class="macros">
+          <span class="macro-pill p"><span class="key">ب </span>48غ</span>
+          <span class="macro-pill f"><span class="key">د </span>4غ</span>
+          <span class="macro-pill c"><span class="key">ك </span>0غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.1s">
+        <div class="glow" style="background:#4a9eff"></div>
+        <span class="food-emoji">🍚</span>
+        <div class="food-name">أرز مطبوخ</div>
+        <div class="food-qty">150 غرام (صحن صغير)</div>
+        <div class="macros">
+          <span class="macro-pill c"><span class="key">ك </span>38غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>3غ</span>
+          <span class="macro-pill f"><span class="key">د </span>0غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.15s">
+        <div class="glow" style="background:#4a9eff"></div>
+        <span class="food-emoji">🥗</span>
+        <div class="food-name">سلطة خضراء مشكلة</div>
+        <div class="food-qty">صحن كبير (بدون زيت)</div>
+        <div class="macros">
+          <span class="macro-pill c"><span class="key">ك </span>8غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>3غ</span>
+          <span class="macro-pill f"><span class="key">د </span>1غ</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ═══ MEAL 3 ═══ -->
+  <div class="meal-section m3">
+    <div class="meal-title">
+      <div class="icon-wrap">🍌</div>
+      <div>
+        <h2>السناك</h2>
+        <span>4:00 عصراً (قبل أو بعد التمرين)</span>
+      </div>
+      <div class="kcal-badge">260 سعرة</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="food-card" style="animation-delay:0.05s">
+        <div class="glow" style="background:#00d4aa"></div>
+        <span class="food-emoji">🧀</span>
+        <div class="food-name">جبنة قريش / بلدية</div>
+        <div class="food-qty">150 غرام</div>
+        <div class="macros">
+          <span class="macro-pill p"><span class="key">ب </span>18غ</span>
+          <span class="macro-pill c"><span class="key">ك </span>5غ</span>
+          <span class="macro-pill f"><span class="key">د </span>5غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.1s">
+        <div class="glow" style="background:#00d4aa"></div>
+        <span class="food-emoji">🍌</span>
+        <div class="food-name">موز طازج</div>
+        <div class="food-qty">حبة واحدة متوسطة (120غ)</div>
+        <div class="macros">
+          <span class="macro-pill c"><span class="key">ك </span>25غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>1غ</span>
+          <span class="macro-pill f"><span class="key">د </span>0غ</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- ═══ MEAL 4 ═══ -->
+  <div class="meal-section m4">
+    <div class="meal-title">
+      <div class="icon-wrap">🌙</div>
+      <div>
+        <h2>العشاء</h2>
+        <span>7:30 – 8:30 مساءً</span>
+      </div>
+      <div class="kcal-badge">600 سعرة</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="food-card" style="animation-delay:0.05s">
+        <div class="glow" style="background:#ff6b35"></div>
+        <span class="food-emoji">🐟</span>
+        <div class="food-name">تونة بالماء</div>
+        <div class="food-qty">علبة واحدة كاملة (170غ)</div>
+        <div class="macros">
+          <span class="macro-pill p"><span class="key">ب </span>34غ</span>
+          <span class="macro-pill f"><span class="key">د </span>2غ</span>
+          <span class="macro-pill c"><span class="key">ك </span>0غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.1s">
+        <div class="glow" style="background:#ff6b35"></div>
+        <span class="food-emoji">🥔</span>
+        <div class="food-name">بطاطا مسلوقة / مشوية</div>
+        <div class="food-qty">حبة متوسطة (170غ)</div>
+        <div class="macros">
+          <span class="macro-pill c"><span class="key">ك </span>34غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>4غ</span>
+          <span class="macro-pill f"><span class="key">د </span>0غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.15s">
+        <div class="glow" style="background:#ff6b35"></div>
+        <span class="food-emoji">🥦</span>
+        <div class="food-name">خضار ورقية مجانية</div>
+        <div class="food-qty">كمية حسب الرغبة</div>
+        <div class="macros">
+          <span class="macro-pill c"><span class="key">ك </span>~5غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>2غ</span>
+          <span class="macro-pill f"><span class="key">د </span>0غ</span>
+        </div>
+      </div>
+
+      <div class="food-card" style="animation-delay:0.2s">
+        <div class="glow" style="background:#ff6b35"></div>
+        <span class="food-emoji">🫒</span>
+        <div class="food-name">زيت زيتون</div>
+        <div class="food-qty">ملعقتان للتتبيل</div>
+        <div class="macros">
+          <span class="macro-pill f"><span class="key">د </span>20غ</span>
+          <span class="macro-pill c"><span class="key">ك </span>0غ</span>
+          <span class="macro-pill p"><span class="key">ب </span>0غ</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- TOTAL ROW -->
+  <div class="total-row">
+    <div class="total-label">📊 المجموع اليومي الكلي</div>
+    <div class="total-item">
+      <div class="tv" style="color:#ffd700">1800</div>
+      <div class="tk">سعرة</div>
+    </div>
+    <div class="total-item">
+      <div class="tv" style="color:#00d4aa">188غ</div>
+      <div class="tk">بروتين</div>
+    </div>
+    <div class="total-item">
+      <div class="tv" style="color:#4a9eff">143غ</div>
+      <div class="tk">كربوهيدرات</div>
+    </div>
+    <div class="total-item">
+      <div class="tv" style="color:#ff6b35">50غ</div>
+      <div class="tk">دهون</div>
+    </div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="tips">
+    <div class="tip">
+      <div class="ti">💧</div>
+      <div class="tv">3-4 لتر</div>
+      <div class="tk">ماء يومياً</div>
+    </div>
+    <div class="tip">
+      <div class="ti">😴</div>
+      <div class="tv">7-8 ساعات</div>
+      <div class="tk">نوم يومياً</div>
+    </div>
+    <div class="tip">
+      <div class="ti">🏋️</div>
+      <div class="tv">4-5 أيام</div>
+      <div class="tk">تمرين أسبوعياً</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    معدل فقدان الوزن المتوقع: <strong style="color:#00d4aa">0.5 – 0.8 كغ / أسبوع</strong> · الوصول للهدف خلال ~20 أسبوعاً
+  </div>
+
+</div>
+</body>
+</html>
